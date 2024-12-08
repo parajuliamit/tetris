@@ -6,6 +6,7 @@ let currentFrameRate = 30;
 
 let blocks = [];
 let currentPiece;
+let nextPiece;
 let nextX = 0;
 let nextY = 0;
 let score = 0;
@@ -14,24 +15,34 @@ function setup() {
   createCanvas(GRID_WIDTH * BLOCK_SIZE, GRID_HEIGHT * BLOCK_SIZE);
   frameRate(currentFrameRate);
   resetGame();
-  createButton("Restart").mousePressed(resetGame);
-  createButton("Pause").mousePressed(() => {
-    noLoop();
-  });
 }
 
 function resetGame() {
   blocks = [];
   currentPiece = getRandomPiece();
+  nextPiece = getRandomPiece();
   nextX = 0;
   nextY = 0;
   score = 0;
+  scoreHTML.innerHTML = "0";
   loop();
 }
 
+function pauseGame() {
+  if (isLooping()) {
+    document.getElementById("pause").innerHTML = "RESUME";
+    noLoop();
+  } else {
+    document.getElementById("pause").innerHTML = "PAUSE";
+    loop();
+  }
+}
+
+let scoreHTML = document.getElementById("score");
+let nextPieceHTML = document.getElementById("nextPiece");
+
 function getRandomPiece() {
   const pieces = [SQUARE, LINE, L, J, T, Z, S];
-  // const pieces = [LINE];
 
   const randomIndex = Math.floor(Math.random() * pieces.length);
   // copy the array instead of referencing it
@@ -47,20 +58,13 @@ function getRandomPiece() {
 function draw() {
   background(0);
   stroke(50);
-  for (var i = 0; i < GRID_HEIGHT; i++) {
+  for (var i = 0; i <= GRID_HEIGHT; i++) {
     line(0, i * BLOCK_SIZE, width, i * BLOCK_SIZE);
   }
-  for (var i = 0; i < GRID_WIDTH; i++) {
+  for (var i = 0; i <= GRID_WIDTH; i++) {
     line(i * BLOCK_SIZE, 0, i * BLOCK_SIZE, height);
   }
-  fill(255);
-  stroke(0, 0, 255);
-  strokeWeight(2);
-  textAlign(RIGHT);
-  textSize(16);
-  text("Score: " + score, width - 10, 20);
   strokeWeight(1);
-  stroke(50);
   let hasHit = false;
   let canMove = true;
   let currentRows = [];
@@ -111,11 +115,11 @@ function draw() {
         currentRows[i] &&
         currenPieceRows[i] + currentRows[i] === GRID_WIDTH
       ) {
-        score++;
+        scoreHTML.innerHTML = ++score;
         blocks = blocks.filter((block) => block.y !== i);
         blocks.map((block) => {
           if (block.y < i) {
-            block.y += nextY;
+            block.y += 1;
           }
         });
       } else {
@@ -124,7 +128,8 @@ function draw() {
         );
       }
     }
-    currentPiece = getRandomPiece();
+    currentPiece = nextPiece;
+    nextPiece = getRandomPiece();
   } else {
     currentPiece.blocks.map((block) => (block.y += nextY));
   }
@@ -150,3 +155,27 @@ function keyPressed() {
     nextY = 1;
   }
 }
+
+let nextPieceSketch = function (p) {
+  p.setup = function () {
+    let nextPieceCanvas = p.createCanvas(BLOCK_SIZE * 4, BLOCK_SIZE * 4);
+    nextPieceCanvas.parent("nextPiece");
+  };
+
+  p.draw = function () {
+    p.background(0);
+    p.stroke(50);
+    p.strokeWeight(1);
+    p.fill(nextPiece.blocks[0].color);
+    nextPiece.blocks.map((block) => {
+      p.rect(
+        block.x * BLOCK_SIZE - 3 * BLOCK_SIZE,
+        block.y * BLOCK_SIZE + 2 * BLOCK_SIZE,
+        BLOCK_SIZE,
+        BLOCK_SIZE
+      );
+    });
+  };
+};
+
+new p5(nextPieceSketch);

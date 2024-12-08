@@ -6,9 +6,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tetris</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.js"></script>
+  <style>
+    button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 8px;
+      width: 100px;
+    }
+  </style>
 </head>
 
-<body>
+<body style="background-color: black;">
+  <div style="display: flex;">
+    <main></main>
+    <div style="color: white; text-align: center; font-size: 1.8rem; margin: 1rem;">
+      <p>Score: <span id="score"></span></p>
+      <div style="border: 1px solid white; padding: 8px; margin-bottom: 8px;">
+        <p style="margin: 0; font-size: medium;">Next Piece</p>
+        <div id="nextPiece" style="margin-top: 8px;"></div>
+      </div>
+      <button style="margin-bottom: 8px;" onclick="resetGame()">RESTART</button>
+      <button onclick="pauseGame()" id="pause">PAUSE</button>
+    </div>
+  </div>
   <script src="sketch.js"></script>
   <script src="block.js"></script>
 </body>
